@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -31,8 +32,10 @@ public class PreGatewayAuthorizationFilterFactory extends AbstractGatewayFilterF
                 try {
                     if (tokenProvider.isValidToken(token)) {
                         Claims claims = tokenProvider.parseClaims(token);
-                        exchange.getResponse().getHeaders().set("User-ID", claims.getSubject());
-                        return chain.filter(exchange); // Token is valid, continue to the next filter
+                        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                                .header("X-User-ID", claims.getSubject())
+                                .build();
+                        return chain.filter(exchange.mutate().request(mutatedRequest).build());
                     }
                 } catch (TokenException e) {
                     log.error("Token validation error: {}", e.getMessage());
