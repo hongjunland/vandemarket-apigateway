@@ -14,40 +14,35 @@ import java.security.Key;
 
 @Slf4j
 @Component
-public class TokenProvider{
+public class TokenProvider {
     private Key key;
-    private Long accessTokenExp;
-    private Long refreshTokenExp;
 
-    public TokenProvider(@Value("${jwt.secret}") String secretKey,
-                         @Value("${jwt.expiration.access}") Long accessTokenExp,
-                         @Value("${jwt.expiration.refresh}") Long refreshTokenExp){
+    public TokenProvider(@Value("${jwt.secret}") String secretKey
+    ) {
         byte[] secretByteKey = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(secretByteKey);
     }
 
-    public boolean isValidToken(String token){
+    public boolean isValidToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        }catch (SecurityException | MalformedJwtException e){
+        } catch (SecurityException | MalformedJwtException e) {
             log.error(ErrorMessage.INVALID_TOKEN.getMessage(), e);
             throw new TokenException(ErrorMessage.INVALID_TOKEN.getMessage());
-        }catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             log.error(ErrorMessage.EXPIRED_TOKEN.getMessage(), e);
             throw new TokenException(ErrorMessage.EXPIRED_TOKEN.getMessage());
-        }catch (UnsupportedJwtException e){
+        } catch (UnsupportedJwtException e) {
             log.error(ErrorMessage.UNSUPPORTED_TOKEN.getMessage(), e);
             throw new TokenException(ErrorMessage.UNSUPPORTED_TOKEN.getMessage());
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.error(ErrorMessage.EMPTY_CLAIMS.getMessage(), e);
             throw new TokenException(ErrorMessage.EMPTY_CLAIMS.getMessage());
         }
     }
-
     public Claims parseClaims(String accessToken) throws ExpiredJwtException {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
     }
-
 
 }

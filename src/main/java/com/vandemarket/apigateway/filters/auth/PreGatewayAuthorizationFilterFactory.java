@@ -1,6 +1,8 @@
 package com.vandemarket.apigateway.filters.auth;
 
 import com.vandemarket.apigateway.exception.TokenException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,8 @@ public class PreGatewayAuthorizationFilterFactory extends AbstractGatewayFilterF
                 String token = authorizationHeader.substring(7);
                 try {
                     if (tokenProvider.isValidToken(token)) {
+                        Claims claims = tokenProvider.parseClaims(token);
+                        exchange.getResponse().getHeaders().set("User-ID", claims.getSubject());
                         return chain.filter(exchange); // Token is valid, continue to the next filter
                     }
                 } catch (TokenException e) {
