@@ -4,3 +4,4 @@
 2. services
     * auth-service
     * product-service
+    * chat-service
