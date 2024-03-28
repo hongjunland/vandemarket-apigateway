@@ -22,9 +22,9 @@ jobs:
       - run: touch ./src/main/resources/application.yml
       - name: Copy Secret
         env:
-          SECRET_FILE = ${{ secrets.API_ENV }}
-          SECRET_PATH= ./src/main/resources/application.yml
-        run: echo $SECRET_FILE | base64 --decode > $SECRET_PATH
+          SECRET_FILE: ${{ secrets.API_ENV }}
+          SECRET_PATH: ./src/main/resources/application.yml
+        run: echo "$SECRET_FILE" | base64 --decode > $SECRET_PATH
 
       - run: cat ./src/main/resources/application.yml
 
