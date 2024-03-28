@@ -20,8 +20,8 @@ jobs:
           distribution: 'adopt'
       - uses: actions/checkout@v3
       - run: touch ./src/main/resources/application.yml
-      - run: cat ./src/main/resources/application.yml
       - run: echo "${{ secrets.API_ENV }}" | base64 --decode > ./src/main/resources/application.yml
+      - run: cat ./src/main/resources/application.yml
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x gradlew
 
