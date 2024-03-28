@@ -26,8 +26,6 @@ jobs:
           SECRET_PATH: ./src/main/resources/application.yml
         run: echo "$SECRET_FILE" | base64 --decode > $SECRET_PATH
 
-      - run: cat ./src/main/resources/application.yml
-
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x gradlew
 
